@@ -1,18 +1,27 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
-// import router from "@/router/";
+import firebase from 'firebase';
+import router from '@/router';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    collection: { tv: {}, movie: {} }
+    collection: { tv: {}, movie: {} },
+    user: null,
+    isAuthenticated: false
     // item: {}
   },
 
   mutations: {
     setCollection(state, collection) {
       state.collection = collection;
+    },
+    setUser(state, payload) {
+      state.user = payload;
+    },
+    setIsAuthenticated(state, payload) {
+      state.isAuthenticated = payload;
     }
     // setItem(state, payload) {
     // 	state.item = payload;
@@ -20,7 +29,7 @@ export default new Vuex.Store({
   },
 
   actions: {
-    getCollection({ commit }, query) {
+    async fetchCollection({ commit }, query) {
       let api_url = process.env.VUE_APP_API_URL;
       let api_key = process.env.VUE_APP_API_KEY;
       console.log('start fetch');
@@ -60,11 +69,63 @@ export default new Vuex.Store({
         );
       }
       return Promise.all(promiseList);
+    },
+
+    userSignUp({ commit }, { email, password }) {
+      return firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(user => {
+          console.log('User created');
+          commit('setUser', user);
+          console.log(user);
+          commit('setIsAuthenticated', true);
+          router.push(`/users/${user.user.uid}`);
+        })
+        .catch(() => {
+          commit('setUser', null);
+          commit('setIsAuthenticated', false);
+        });
+    },
+
+    userSignIn({ commit }, { email, password }) {
+      return firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(user => {
+          console.log('User logged in');
+          commit('setUser', user);
+          console.log(user);
+          commit('setIsAuthenticated', true);
+          router.push(`/users/${user.user.uid}`);
+        })
+        .catch(() => {
+          commit('setUser', null);
+          commit('setIsAuthenticated', false);
+        });
+    },
+
+    userSignOut({ commit }) {
+      return firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          console.log('User signed out');
+          commit('setUser', null);
+          // console.log(this.state.user);
+          commit('setIsAuthenticated', false);
+          router.push('/').catch(() => router.go());
+        })
+        .catch(() => {
+          commit('setUser', null);
+          commit('setIsAuthenticated', false);
+          router.push('/').catch(() => router.go());
+        });
     }
   },
 
   getters: {
-    collection: state => state.collection,
+    getCollection: state => state.collection,
     getBackdropPath: () => path => {
       if (path) return 'https://image.tmdb.org/t/p/w780' + path;
       return require('../assets/no-backdrop-image.jpg');
@@ -76,7 +137,9 @@ export default new Vuex.Store({
     getPosterPath: () => path => {
       if (path) return 'https://image.tmdb.org/t/p/w342' + path;
       return require('../assets/no-image.png');
-    }
+    },
+    isAuthenticated: state => state.isAuthenticated,
+    getUser: state => state.user
   },
 
   modules: {}

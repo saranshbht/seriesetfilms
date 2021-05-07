@@ -32,49 +32,49 @@
 </template>
 
 <script>
-import ItemDialog from "./ItemDialog";
-import Loading from "./Loading";
-import { mapGetters } from "vuex";
+  import ItemDialog from './ItemDialog';
+  import Loading from './Loading';
+  import { mapGetters } from 'vuex';
 
-export default {
-  name: "ItemCard",
-  components: {
-    ItemDialog,
-    Loading,
-  },
-  props: ["item", "width", "height"],
-  data() {
-    return {
-      dialog: false,
-    };
-  },
-  methods: {
-    print() {
-      console.log("added");
+  export default {
+    name: 'ItemCard',
+    components: {
+      ItemDialog,
+      Loading
     },
-  },
-  computed: mapGetters(["getPosterPath"]),
-};
+    props: ['item', 'width', 'height'],
+    data() {
+      return {
+        dialog: false
+      };
+    },
+    methods: {
+      print() {
+        console.log('added');
+      }
+    },
+    computed: mapGetters(['getPosterPath'])
+  };
 </script>
 
 <style scoped>
-.title,
-.subtitle-1 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.v-image >>> .v-image__image {
-  background-size: 100% 100%;
-}
+  .title,
+  .subtitle-1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .v-image >>> .v-image__image {
+    background-size: 100% 100%;
+  }
 
-.overlay-text {
-  word-break: break-word;
-  text-align: left;
-  color: white;
-  font-style: oblique;
-  font-weight: 600;
-}
-/* .v-btn--fab {
+  .overlay-text {
+    word-break: break-word;
+    text-align: left;
+    color: white;
+    font-style: oblique;
+    font-weight: 600;
+  }
+  /* .v-btn--fab {
         position: absolute;
         right: 0;
         bottom: 0;

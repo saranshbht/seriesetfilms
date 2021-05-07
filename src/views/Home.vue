@@ -41,42 +41,43 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import { mapActions, mapGetters } from "vuex";
-import CollectionCard from "@/components/CollectionCard.vue";
-import Loading from "@/components/Loading.vue";
+  // @ is an alias to /src
+  import { mapActions, mapGetters } from 'vuex';
+  import CollectionCard from '@/components/CollectionCard.vue';
+  import Loading from '@/components/Loading.vue';
 
-export default {
-  name: "Home",
-  components: {
-    CollectionCard,
-    Loading,
-  },
-  data() {
-    return {
-      tab: null,
-      loading: false,
-      search: "",
-    };
-  },
-  methods: {
-    ...mapActions(["getCollection"]),
-    async updateCollection() {
-      this.loading = true;
-      console.log(this.search);
-      await this.getCollection(this.search);
-      console.log(this.$vuetify.breakpoint.name);
-      this.loading = false;
+  export default {
+    name: 'Home',
+    components: {
+      CollectionCard,
+      Loading
     },
-  },
-  computed: mapGetters(["collection"]),
-  async created() {
-    this.loading = true;
-    await this.getCollection(this.search);
-    this.loading = false;
-  },
-};
+    data() {
+      return {
+        tab: null,
+        loading: false,
+        search: ''
+      };
+    },
+    methods: {
+      ...mapActions(['fetchCollection']),
+      async updateCollection() {
+        this.loading = true;
+        console.log(this.search);
+        await this.getCollection(this.search);
+        console.log(this.$vuetify.breakpoint.name);
+        this.loading = false;
+      }
+    },
+    computed: mapGetters(['getCollection']),
+    async created() {
+      this.loading = true;
+      await this.fetchCollection(this.search);
+      this.loading = false;
+      this.collection = this.getCollection;
+      console.log(this.getCollection);
+    }
+  };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
