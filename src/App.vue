@@ -1,32 +1,61 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view />
-  </div>
+  <v-app>
+    <v-navigation-drawer v-model="drawer" app temporary>
+      <navigation-menu :items="items"></navigation-menu>
+    </v-navigation-drawer>
+    <v-app-bar app class="indigo darken-4 white--text">
+      <v-app-bar-nav-icon
+        dark
+        @click.stop="drawer = !drawer"
+      ></v-app-bar-nav-icon>
+      <v-spacer />
+      <v-toolbar-title>
+        <span class="header"> Series Et Films </span>
+      </v-toolbar-title>
+      <v-spacer />
+    </v-app-bar>
+    <v-main>
+      <router-view :key="$route.fullPath" />
+    </v-main>
+  </v-app>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script type="text/javascript">
+import NavigationMenu from "@/components/NavigationMenu.vue";
 
-#nav {
-  padding: 30px;
-}
+export default {
+  components: { NavigationMenu },
+  data() {
+    return {
+      drawer: false,
+      items: [
+        {
+          href: "/",
+          title: "Home",
+          icon: "home",
+        },
+        {
+          href: "/account",
+          title: "My Account",
+          icon: "account_circle",
+        },
+        {
+          href: "/about",
+          title: "About",
+          icon: "domain",
+        },
+      ],
+    };
+  },
+};
+</script>
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+<style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Yellowtail&display=swap");
+.header {
+  font-family: "Yellowtail", cursive;
+  font-weight: 900;
+  font-size: 3rem;
+  word-break: break-word;
 }
 </style>

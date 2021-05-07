@@ -1,0 +1,34 @@
+<template>
+  <v-row no-gutters class="d-flex fill-height align-content-end white--text">
+    <v-col cols="12" class="title px-2 text-h4">
+      {{ item.name || item.title }}
+    </v-col>
+
+    <v-col cols="12" class="px-2 subtitle-1">
+      <span v-if="item.air_date">
+        {{ item.air_date }}
+      </span>
+      <span v-if="item.first_air_date">
+        ({{ item.first_air_date.split("-")[0] }})
+      </span>
+      <span v-if="item.release_date">
+        ({{ item.release_date.split("-")[0] }})
+      </span>
+    </v-col>
+  </v-row>
+</template>
+
+<script>
+export default {
+  name: "Overlay",
+  props: ["item"]
+};
+</script>
+
+<style scoped>
+.title,
+.subtitle-1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
