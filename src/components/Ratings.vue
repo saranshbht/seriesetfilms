@@ -21,10 +21,10 @@
 </template>
 
 <script>
-export default {
-  name: "Ratings",
-  props: ["item"]
-};
+  export default {
+    name: 'Ratings',
+    props: ['item']
+  };
 </script>
 
 <style></style>

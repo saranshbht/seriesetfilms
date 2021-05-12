@@ -9,26 +9,26 @@
         {{ item.air_date }}
       </span>
       <span v-if="item.first_air_date">
-        ({{ item.first_air_date.split("-")[0] }})
+        ({{ item.first_air_date.split('-')[0] }})
       </span>
       <span v-if="item.release_date">
-        ({{ item.release_date.split("-")[0] }})
+        ({{ item.release_date.split('-')[0] }})
       </span>
     </v-col>
   </v-row>
 </template>
 
 <script>
-export default {
-  name: "Overlay",
-  props: ["item"]
-};
+  export default {
+    name: 'Overlay',
+    props: ['item']
+  };
 </script>
 
 <style scoped>
-.title,
-.subtitle-1 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .title,
+  .subtitle-1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>

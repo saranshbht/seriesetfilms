@@ -41,24 +41,24 @@
 </template>
 
 <script type="text/javascript">
-// import axios from "axios";
-import { mapGetters } from "vuex";
-import Loading from "./Loading";
-import Overlay from "./Overlay";
+  // import axios from "axios";
+  import { mapGetters } from 'vuex';
+  import Loading from './Loading';
+  import Overlay from './Overlay';
 
-export default {
-  name: "ProfileDialog",
-  components: {
-    Loading,
-    Overlay
-  },
-  props: ["actor"],
-  computed: mapGetters(["getPosterPath", "getProfilePath", "getBackdropPath"])
-};
+  export default {
+    name: 'ProfileDialog',
+    components: {
+      Loading,
+      Overlay
+    },
+    props: ['actor'],
+    computed: mapGetters(['getPosterPath', 'getProfilePath', 'getBackdropPath'])
+  };
 </script>
 
 <style scoped>
-* {
-  word-break: break-word;
-}
+  * {
+    word-break: break-word;
+  }
 </style>
