@@ -2,7 +2,15 @@
   <v-container fluid>
     <v-row class="pa-2">
       <template v-for="(item, i) in collection">
-        <v-col xs="6" sm="4" md="3" lg="2" xl="1" :key="i">
+        <v-col
+          xs="6"
+          sm="4"
+          md="3"
+          lg="2"
+          xl="1"
+          :key="i"
+          class="d-flex justify-center"
+        >
           <ItemCard :item="item" :width="cardWidth" :height="cardHeight" />
         </v-col>
       </template>
@@ -14,13 +22,13 @@
 </template>
 
 <script type="text/javascript">
-import ItemCard from "@/components/ItemCard.vue";
+  import ItemCard from '@/components/ItemCard';
 
-export default {
-  name: "CollectionCard",
-  components: {
-    ItemCard,
-  },
-  props: ["collection", "cardHeight", "cardWidth"],
-};
+  export default {
+    name: 'CollectionCard',
+    components: {
+      ItemCard
+    },
+    props: ['collection', 'cardHeight', 'cardWidth']
+  };
 </script>

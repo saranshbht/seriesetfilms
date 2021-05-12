@@ -1,30 +1,42 @@
 <template>
   <v-app>
     <v-navigation-drawer v-model="drawer" app temporary>
-      <navigation-menu :items="items"></navigation-menu>
+      <navigation-menu :items="menuItems"></navigation-menu>
     </v-navigation-drawer>
     <v-app-bar app class="indigo darken-4 white--text">
       <v-app-bar-nav-icon
         dark
         @click.stop="drawer = !drawer"
+        class="hidden-sm-and-up"
       ></v-app-bar-nav-icon>
       <v-spacer />
-      <router-link to="/">
-        <v-toolbar-title to="/">
-          <span class="header white--text text-decoration-none">
+
+      <v-toolbar-title>
+        <router-link to="/" tag="span" class="header">
+          {{ appName }}
+          <!-- <span class="header white--text text-decoration-none">
             {{ appName }}
-          </span>
-        </v-toolbar-title>
-      </router-link>
+          </span> -->
+        </router-link>
+      </v-toolbar-title>
+
       <v-spacer />
-      <div v-if="!isAuthenticated" class="hidden-sm-and-down">
-        <v-btn color="indigo darken-1 white--text" to="/signin">Sign In</v-btn>
-      </div>
-      <div v-else class="hidden-sm-and-down">
-        <v-btn color="indigo darken-1 white--text" @click="logout"
-          >Sign Out</v-btn
+      <v-toolbar-items class="hidden-xs-only">
+        <v-btn
+          text
+          dark
+          v-for="item in menuItems"
+          :key="item.title"
+          :to="item.link"
         >
-      </div>
+          <v-icon left dark>{{ item.icon }}</v-icon>
+          {{ item.title }}
+        </v-btn>
+        <v-btn text dark v-if="isAuthenticated" @click="onSignout">
+          <v-icon left dark>exit_to_app</v-icon>
+          Sign Out
+        </v-btn>
+      </v-toolbar-items>
     </v-app-bar>
     <v-main>
       <router-view :key="$route.fullPath" />
@@ -34,9 +46,9 @@
 </template>
 
 <script type="text/javascript">
-  import NavigationMenu from '@/components/NavigationMenu.vue';
+  import NavigationMenu from '@/components/NavigationMenu';
   import { mapActions, mapGetters } from 'vuex';
-  // import Snackbar from '@/components/Snackbar.vue';
+  // import Snackbar from '@/components/Snackbar';
 
   export default {
     components: {
@@ -46,36 +58,27 @@
     data() {
       return {
         appName: 'Series Et Films',
-        drawer: false,
-        items: [
-          {
-            href: '/',
-            title: 'Home',
-            icon: 'home'
-          },
-          {
-            href: '/account',
-            title: 'My Account',
-            icon: 'account_circle'
-          },
-          {
-            href: '/about',
-            title: 'About',
-            icon: 'domain'
-          }
-        ]
+        drawer: false
         // showSnackbar: false
       };
     },
     computed: {
-      ...mapGetters({
-        isAuthenticated: 'isAuthenticated',
-        getUser: 'getUser'
-      })
+      ...mapGetters(['user', 'isAuthenticated']),
+      menuItems() {
+        let menuItems = [
+          { icon: 'mdi-account-plus', title: 'Sign Up', link: '/signup' },
+          { icon: 'lock_open', title: 'Sign In', link: '/signin' }
+        ];
+        if (this.isAuthenticated) {
+          menuItems = [{ icon: 'person', title: 'Profile', link: '/profile' }];
+        }
+        return menuItems;
+      }
     },
     methods: {
       ...mapActions(['userSignOut']),
-      logout() {
+
+      onSignout() {
         this.userSignOut();
       }
     }
@@ -89,5 +92,6 @@
     font-weight: 900;
     font-size: 3rem;
     word-break: break-word;
+    cursor: pointer;
   }
 </style>

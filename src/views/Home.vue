@@ -7,7 +7,7 @@
         label="Search"
         prepend-inner-icon="search"
         solo
-        @keydown.enter="updateCollection()"
+        @keydown.enter="onUpdate()"
       />
     </v-card-title>
 
@@ -22,8 +22,8 @@
         <CollectionCard
           v-else
           :collection="collection.tv"
-          card-width="200"
-          card-height="300"
+          card-width="240"
+          card-height="320"
         />
       </v-tab-item>
 
@@ -32,8 +32,8 @@
         <CollectionCard
           v-else
           :collection="collection.movie"
-          card-width="200"
-          card-height="300"
+          card-width="240"
+          card-height="320"
         />
       </v-tab-item>
     </v-tabs-items>
@@ -43,8 +43,8 @@
 <script>
   // @ is an alias to /src
   import { mapActions, mapGetters } from 'vuex';
-  import CollectionCard from '@/components/CollectionCard.vue';
-  import Loading from '@/components/Loading.vue';
+  import CollectionCard from '@/components/CollectionCard';
+  import Loading from '@/components/Loading';
 
   export default {
     name: 'Home',
@@ -55,27 +55,19 @@
     data() {
       return {
         tab: null,
-        loading: false,
         search: ''
       };
     },
     methods: {
       ...mapActions(['fetchCollection']),
-      async updateCollection() {
-        this.loading = true;
-        console.log(this.search);
-        await this.getCollection(this.search);
-        console.log(this.$vuetify.breakpoint.name);
-        this.loading = false;
+      onUpdate() {
+        this.fetchCollection(this.search);
+        // console.log(this.$vuetify.breakpoint.name);
       }
     },
-    computed: mapGetters(['getCollection']),
-    async created() {
-      this.loading = true;
-      await this.fetchCollection(this.search);
-      this.loading = false;
-      this.collection = this.getCollection;
-      console.log(this.getCollection);
+    computed: mapGetters(['collection', 'loading']),
+    mounted() {
+      this.fetchCollection(this.search);
     }
   };
 </script>

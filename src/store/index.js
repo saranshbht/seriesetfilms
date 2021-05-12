@@ -7,21 +7,29 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    collection: { tv: {}, movie: {} },
+    collection: { tv: null, movie: null },
     user: null,
-    isAuthenticated: false
+    error: null,
+    loading: false,
+    query: null
     // item: {}
   },
 
   mutations: {
-    setCollection(state, collection) {
-      state.collection = collection;
+    setCollection(state, payload) {
+      state.collection = payload;
     },
     setUser(state, payload) {
       state.user = payload;
     },
-    setIsAuthenticated(state, payload) {
-      state.isAuthenticated = payload;
+    setError(state, payload) {
+      state.error = payload;
+    },
+    setLoading(state, payload) {
+      state.loading = payload;
+    },
+    setQuery(state, payload) {
+      state.query = payload;
     }
     // setItem(state, payload) {
     // 	state.item = payload;
@@ -29,13 +37,20 @@ export default new Vuex.Store({
   },
 
   actions: {
-    async fetchCollection({ commit }, query) {
+    fetchCollection({ state, commit }, query) {
+      console.log(query);
+      if (query === state.query || (query === '' && !!state.collection.tv))
+        return;
+      commit('setQuery', query);
+      commit('setLoading', true);
+      commit('setError', null);
       let api_url = process.env.VUE_APP_API_URL;
       let api_key = process.env.VUE_APP_API_KEY;
       console.log('start fetch');
       let collection = {};
       let promiseList = [];
       for (let type of ['tv', 'movie']) {
+        collection[type] = [];
         let url = api_url,
           params = {};
         params['api_key'] = api_key;
@@ -48,84 +63,145 @@ export default new Vuex.Store({
         }
 
         promiseList.push(
-          axios
-            .get(url, { params })
-            .then(response => {
-              console.log(response);
-              if (response.status == 200) {
-                console.log('fetched');
-                collection[type] = response.data.results;
-                collection[type].map(obj => (obj['type'] = type));
-                commit('setCollection', collection);
-              } else {
-                console.log('failed');
-                collection[type] = [];
-              }
-            })
-            .catch(() => {
-              console.log('Some error occurred');
-              collection[type] = [];
-            })
+          axios.get(url, { params }).then(response => {
+            console.log(response);
+            if (response.status == 200) {
+              console.log('fetched');
+              collection[type] = response.data.results;
+              collection[type].map(obj => (obj['type'] = type));
+              commit('setCollection', collection);
+            } else {
+              console.log('failed');
+            }
+          })
         );
       }
-      return Promise.all(promiseList);
+      Promise.all(promiseList)
+        .then(() => {
+          commit('setLoading', false);
+        })
+        .catch(error => {
+          console.log('Some error occurred');
+          commit('setError', error);
+          commit('setLoading', false);
+        });
     },
 
-    userSignUp({ commit }, { email, password }) {
-      return firebase
+    userSignUp({ commit, dispatch }, { email, password, firstName, lastName }) {
+      commit('setLoading', true);
+      commit('setError', null);
+      firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
         .then(user => {
-          console.log('User created');
-          commit('setUser', user);
-          console.log(user);
-          commit('setIsAuthenticated', true);
+          console.log('User signed up');
+          const userData = {
+            id: user.user.uid,
+            favorites: [],
+            firstName: firstName,
+            lastName: lastName
+          };
+          dispatch('updateUserData', { userData: userData });
           router.push(`/users/${user.user.uid}`);
         })
-        .catch(() => {
+        .catch(error => {
           commit('setUser', null);
-          commit('setIsAuthenticated', false);
+          commit('setError', error);
+          commit('setLoading', false);
         });
     },
 
-    userSignIn({ commit }, { email, password }) {
-      return firebase
+    userSignIn({ commit, dispatch }, { email, password }) {
+      commit('setLoading', true);
+      commit('setError', null);
+      firebase
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then(user => {
-          console.log('User logged in');
-          commit('setUser', user);
-          console.log(user);
-          commit('setIsAuthenticated', true);
+          console.log('User signed in');
+          const userData = {
+            id: user.user.uid
+          };
+          commit('setUser', userData);
+          dispatch('getUserData');
+          commit('setLoading', false);
           router.push(`/users/${user.user.uid}`);
         })
-        .catch(() => {
+        .catch(error => {
           commit('setUser', null);
-          commit('setIsAuthenticated', false);
+          commit('setError', error);
+          commit('setLoading', false);
         });
     },
 
+    autoSignIn({ commit, dispatch }, payload) {
+      commit('setUser', { id: payload.uid });
+      dispatch('getUserData');
+    },
+
     userSignOut({ commit }) {
-      return firebase
+      commit('setLoading', true);
+      commit('setError', null);
+      firebase
         .auth()
         .signOut()
         .then(() => {
           console.log('User signed out');
           commit('setUser', null);
-          // console.log(this.state.user);
-          commit('setIsAuthenticated', false);
+          commit('setLoading', false);
           router.push('/').catch(() => router.go());
         })
-        .catch(() => {
+        .catch(error => {
           commit('setUser', null);
-          commit('setIsAuthenticated', false);
+          commit('setError', error);
+          commit('setLoading', false);
+          console.log(error);
           router.push('/').catch(() => router.go());
         });
+    },
+
+    getUserData({ commit, getters }) {
+      firebase
+        .database()
+        .ref('/users/' + getters.user.id)
+        .once('value')
+        .then(data => data.val())
+        .then(userData => {
+          commit('setUser', userData);
+        })
+        .catch(error => {
+          commit('setUser', null);
+          commit('setError', error);
+          commit('setLoading', false);
+        });
+    },
+
+    updateUserData({ commit }, { userData, message }) {
+      commit('setLoading', true);
+      commit('setError', null);
+      commit('setUser', userData);
+      console.log(message);
+      firebase
+        .database()
+        .ref('/users/' + userData.id)
+        .update(userData)
+        .then(() => {
+          commit('setError', { message: message });
+          commit('setLoading', false);
+        })
+        .catch(error => {
+          commit('setLoading', false);
+          commit('setError', error);
+        });
+    },
+
+    clearError({ commit }) {
+      commit('setError', null);
     }
   },
 
   getters: {
-    getCollection: state => state.collection,
+    collection: state => state.collection,
     getBackdropPath: () => path => {
       if (path) return 'https://image.tmdb.org/t/p/w780' + path;
       return require('../assets/no-backdrop-image.jpg');
@@ -138,8 +214,12 @@ export default new Vuex.Store({
       if (path) return 'https://image.tmdb.org/t/p/w342' + path;
       return require('../assets/no-image.png');
     },
-    isAuthenticated: state => state.isAuthenticated,
-    getUser: state => state.user
+    user: state => state.user,
+    error: state => state.error,
+    loading: state => state.loading,
+    isAuthenticated: state => {
+      return state.user !== null && state.user != undefined;
+    }
   },
 
   modules: {}

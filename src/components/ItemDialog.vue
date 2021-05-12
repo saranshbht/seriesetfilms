@@ -27,7 +27,7 @@
     </v-row>
 
     <v-row class="justify-space-around pb-2" no-gutters>
-      <v-btn fab color="red" class="white--text mx-auto">
+      <v-btn fab color="red" class="white--text mx-auto" v-if="isAuthenticated">
         <v-icon>mdi-heart</v-icon>
       </v-btn>
 
@@ -39,7 +39,7 @@
         @click="
           $router.push({
             name: 'Item',
-            params: { type: item.type || $route.params.type, id: item.id },
+            params: { type: item.type || $route.params.type, id: item.id }
           })
         "
       >
@@ -50,31 +50,31 @@
 </template>
 
 <script type="text/javascript">
-import Ratings from "./Ratings";
-import Loading from "./Loading";
-import Overlay from "./Overlay";
-import { mapGetters } from "vuex";
+  import Ratings from './Ratings';
+  import Loading from './Loading';
+  import Overlay from './Overlay';
+  import { mapGetters } from 'vuex';
 
-export default {
-  name: "ItemDialog",
-  components: {
-    Ratings,
-    Loading,
-    Overlay,
-  },
-  props: ["item"],
-  computed: mapGetters(["getBackdropPath"]),
-};
+  export default {
+    name: 'ItemDialog',
+    components: {
+      Ratings,
+      Loading,
+      Overlay
+    },
+    props: ['item'],
+    computed: mapGetters(['getBackdropPath', 'user', 'isAuthenticated'])
+  };
 </script>
 
 <style scoped>
-* {
-  word-break: break-word;
-}
-span {
-  display: block;
-}
-img {
-  background-size: cover;
-}
+  * {
+    word-break: break-word;
+  }
+  span {
+    display: block;
+  }
+  img {
+    background-size: cover;
+  }
 </style>

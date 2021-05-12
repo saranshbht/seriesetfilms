@@ -1,44 +1,67 @@
 <template>
   <v-container fill-height fluid>
-    <!-- <v-flex xs3 style="background-image: url('http://cdn.wallpapersafari.com/7/86/gqiGH7.jpg')">
-        <v-card height="500px"></v-card>
-      </v-flex> -->
-    <v-flex md4 sm6 xs10 mx-auto my-6>
-      <v-container class="text-center">
+    <v-row v-if="error">
+      <v-col sm="6" offset-sm="3">
+        <app-alert
+          @dismissed="onDismissed"
+          :text="error.message"
+          :type="'error'"
+        ></app-alert>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col sm="6" offset-sm="3">
         <v-card flat>
           <v-card-title class="font-weight-black text-h4 justify-center">
             Register
           </v-card-title>
-          <v-form ref="form" v-model="valid" lazy-validation>
-            <!-- <v-text-field
+          <v-form @submit.prevent="onSubmit" v-model="formValid">
+            <v-text-field
               prepend-inner-icon="mdi-account"
-              name="Name"
-              label="Full Name"
-              required
+              name="firstName"
+              label="First Name"
+              v-model="firstName"
+              :rules="[rules.required]"
             >
-            </v-text-field> -->
+            </v-text-field>
+            <v-text-field
+              prepend-inner-icon="mdi-account"
+              name="lastName"
+              label="Last Name"
+              v-model="lastName"
+            >
+            </v-text-field>
             <v-text-field
               prepend-inner-icon="mdi-email"
               name="email"
               label="Email"
-              type="email"
+              id="email"
               v-model="email"
-              :rules="emailRules"
-              required
+              :rules="[rules.required, rules.email]"
             >
             </v-text-field>
             <v-text-field
               prepend-inner-icon="mdi-lock"
               name="password"
               label="Password"
+              id="password"
               type="password"
               v-model="password"
-              id="password"
-              :rules="passwordRules"
-              required
+              :rules="[rules.required]"
             >
             </v-text-field>
-            <!-- <v-radio-group row>
+            <v-text-field
+              prepend-inner-icon="mdi-lock"
+              name="confirmPassword"
+              label="Confirm Password"
+              id="confirmPassword"
+              type="password"
+              v-model="confirmPassword"
+              :rules="[comparePasswords]"
+            >
+            </v-text-field>
+            <v-radio-group row :rules="[v => !!v || 'Item is required']">
               <v-radio on-icon="mdi-gender-male" label="Male" value="Male">
               </v-radio>
               <v-radio
@@ -47,22 +70,28 @@
                 value="Female"
               >
               </v-radio>
-            </v-radio-group> -->
-            <!-- <v-checkbox v-model="terms">
+            </v-radio-group>
+            <v-checkbox :rules="[v => !!v || 'You must agree to continue!']">
               <template v-slot:label>
                 <div>I agree to the <a href="">Terms and Conditions</a></div>
               </template>
-            </v-checkbox> -->
+            </v-checkbox>
             <v-card-actions>
-              <v-spacer></v-spacer>
               <v-btn
                 color="primary"
                 large
                 block
-                :disabled="!valid"
-                @click="submit"
-                >Sign up</v-btn
+                type="submit"
+                :disabled="!formValid || loading"
+                :loading="loading"
               >
+                Sign Up
+                <template v-slot:loader>
+                  <span class="custom-loader">
+                    <v-icon light>mdi-cached</v-icon>
+                  </span>
+                </template>
+              </v-btn>
             </v-card-actions>
           </v-form>
 
@@ -76,55 +105,98 @@
             <v-icon color="black" large>mdi-apple</v-icon>
           </v-row> -->
         </v-card>
-      </v-container>
-      <v-footer class="justify-center my-6">
-        Already have an account?{{ '\xa0' }}
-        <strong><router-link to="/signin">Sign in</router-link></strong>
-      </v-footer>
-      <Snackbar text="Signing up failed!" v-model="showSnackbar" />
-    </v-flex>
+        <v-footer class="justify-center my-6">
+          Already have an account?{{ '\xa0' }}
+          <strong><router-link to="/signin">Sign in</router-link></strong>
+        </v-footer>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
-  import { mapActions } from 'vuex';
-  import Snackbar from '@/components/Snackbar.vue';
+  import { mapActions, mapGetters } from 'vuex';
   export default {
     name: 'SignUp',
-    components: {
-      Snackbar
-    },
     data() {
       return {
-        valid: false,
+        formValid: false,
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
-        emailRules: [
-          v => !!v || 'Email must be valid',
-          v => /.+@.+/.test(v) || 'Email must be valid'
-        ],
-        passwordRules: [
-          v => !!v || 'Password is required',
-          v => v.length >= 6 || 'Password must be greater than 6 characters'
-        ],
-        showSnackbar: false
-      };
-    },
-    methods: {
-      ...mapActions(['userSignUp']),
-      async submit() {
-        if (this.$refs.form.validate()) {
-          await this.userSignUp({
-            email: this.email,
-            password: this.password
-          });
-          if (!this.getUser) {
-            this.showSnackbar = true;
+        confirmPassword: '',
+        rules: {
+          required: value => !!value || 'Required',
+          email: value => {
+            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return pattern.test(value) || 'Invalid e-mail.';
           }
         }
+      };
+    },
+    computed: {
+      ...mapGetters(['error', 'loading']),
+      comparePasswords() {
+        return this.password !== this.confirmPassword
+          ? 'Passwords do not match'
+          : true;
+      }
+    },
+    methods: {
+      ...mapActions(['userSignUp', 'clearError']),
+      onSubmit() {
+        console.log('submitted');
+        this.userSignUp({
+          email: this.email,
+          password: this.password,
+          firstName: this.firstName,
+          lastName: this.lastName
+        });
+      },
+      onDismissed() {
+        // console.log('Dismissed alert');
+        this.clearError();
       }
     }
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+  .custom-loader {
+    animation: loader 1s infinite;
+    display: flex;
+  }
+  @-moz-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-webkit-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @-o-keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes loader {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

@@ -1,46 +1,50 @@
 <template>
-  <v-list v-if="isAuthenticated" class="d-flex flex-column" height="100%">
-    <v-list-item>
+  <v-list class="d-flex flex-column" height="100%">
+    <v-list-item v-if="isAuthenticated">
       <v-list-item-avatar>
-        <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
+        <v-avatar color="orange" size="96">
+          <span class="white--text headline">X</span>
+        </v-avatar>
       </v-list-item-avatar>
 
       <v-list-item-content>
-        <v-list-item-title>John Leider</v-list-item-title>
+        <v-list-item-title>{{
+          user.firstName + ' ' + user.lastName
+        }}</v-list-item-title>
       </v-list-item-content>
     </v-list-item>
+
     <v-divider></v-divider>
-    <template v-for="(item, index) in items">
-      <v-list-item :href="item.href" :to="item.href" :key="index">
+    <template v-for="item in items">
+      <v-list-item :href="item.href" :to="item.link" :key="item.title">
         <v-list-item-action>
-          <v-icon light v-html="item.icon"></v-icon>
+          <v-icon light> {{ item.icon }} </v-icon>
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title v-html="item.title"></v-list-item-title>
+          <v-list-item-title> {{ item.title }} </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </template>
 
-    <v-list-item class="mt-auto justify-center">
-      <v-btn color="indigo darken-1 white--text" @click="logout"
-        >Sign Out</v-btn
-      >
+    <v-list-item v-if="isAuthenticated" @click="onSignout">
+      <v-list-item-action>
+        <v-icon light> exit_to_app </v-icon>
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title> Sign Out </v-list-item-title>
+      </v-list-item-content>
     </v-list-item>
   </v-list>
-
-  <div v-else class="text-center mt-5">
-    <v-btn color="indigo darken-1 white--text" to="/signin">Sign In</v-btn>
-  </div>
 </template>
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
   export default {
     props: ['items'],
-    computed: mapGetters(['isAuthenticated']),
+    computed: mapGetters(['user', 'isAuthenticated']),
     methods: {
       ...mapActions(['userSignOut']),
-      logout() {
+      onSignout() {
         this.userSignOut();
       }
     }

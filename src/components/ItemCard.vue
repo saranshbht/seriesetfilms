@@ -1,9 +1,11 @@
 <template>
-  <v-card class="my-1">
+  <v-card class="my-1" :width="width" :height="height">
     <v-img
       :src="getPosterPath(item.poster_path || item.still_path)"
       gradient="to bottom, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.7)"
       @click.stop="dialog = true"
+      :width="width"
+      :height="height"
     >
       <template v-slot:placeholder>
         <Loading />
@@ -48,11 +50,11 @@
         dialog: false
       };
     },
-    methods: {
-      print() {
-        console.log('added');
-      }
-    },
+    // methods: {
+    //   print() {
+    //     console.log('added');
+    //   }
+    // },
     computed: mapGetters(['getPosterPath'])
   };
 </script>

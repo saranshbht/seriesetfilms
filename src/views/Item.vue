@@ -42,7 +42,7 @@
             <div>
               {{
                 review.content.length > 200
-                  ? review.content.slice(0, 200) + "..."
+                  ? review.content.slice(0, 200) + '...'
                   : review.content
               }}
             </div>
@@ -68,7 +68,7 @@
               <div v-if="item.genres && item.genres.length">
                 <div class="text-h5 font-weight-bold">Genres</div>
                 <div class="subtitle-1">
-                  {{ item.genres.map((e) => e.name).join(", ") }}
+                  {{ item.genres.map(e => e.name).join(', ') }}
                 </div>
               </div>
 
@@ -140,14 +140,14 @@
               <div v-if="item.created_by && item.created_by.length">
                 <div class="text-h5 font-weight-bold">Creator(s)</div>
                 <div class="subtitle-1">
-                  {{ item.created_by.map((e) => e.name).join(", ") }}
+                  {{ item.created_by.map(e => e.name).join(', ') }}
                 </div>
               </div>
 
               <div v-if="item.origin_country && item.origin_country.length">
                 <div class="text-h5 font-weight-bold">Country</div>
                 <div class="subtitle-1">
-                  {{ item.origin_country.join(", ") }}
+                  {{ item.origin_country.join(', ') }}
                 </div>
               </div>
               <div
@@ -157,7 +157,7 @@
               >
                 <div class="text-h5 font-weight-bold">Production Companies</div>
                 <div class="subtitle-1">
-                  {{ item.production_companies.map((e) => e.name).join(", ") }}
+                  {{ item.production_companies.map(e => e.name).join(', ') }}
                 </div>
               </div>
             </v-expansion-panel-content>
@@ -229,122 +229,122 @@
 </template>
 
 <script type="text/javascript">
-import axios from "axios";
-import { mapGetters } from "vuex";
-import ItemCard from "@/components/ItemCard";
-import Ratings from "@/components/Ratings";
-import Loading from "@/components/Loading";
-import Overlay from "@/components/Overlay";
-import ProfileDialog from "@/components/ProfileDialog";
+  import axios from 'axios';
+  import { mapGetters } from 'vuex';
+  import ItemCard from '@/components/ItemCard';
+  import Ratings from '@/components/Ratings';
+  import Loading from '@/components/Loading';
+  import Overlay from '@/components/Overlay';
+  import ProfileDialog from '@/components/ProfileDialog';
 
-let api_url = process.env.VUE_APP_API_URL;
-let api_key = process.env.VUE_APP_API_KEY;
+  let api_url = process.env.VUE_APP_API_URL;
+  let api_key = process.env.VUE_APP_API_KEY;
 
-export default {
-  name: "Item",
-  components: {
-    ItemCard,
-    Ratings,
-    Loading,
-    Overlay,
-    ProfileDialog,
-  },
-  props: ["type", "id"],
+  export default {
+    name: 'Item',
+    components: {
+      ItemCard,
+      Ratings,
+      Loading,
+      Overlay,
+      ProfileDialog
+    },
+    props: ['type', 'id'],
 
-  data() {
-    return {
-      item: {},
-      season: {},
-      loading: false,
-      panel: -1,
-      dialog: false,
-      actor: null,
-    };
-  },
+    data() {
+      return {
+        item: {},
+        season: {},
+        loading: false,
+        panel: -1,
+        dialog: false,
+        actor: null
+      };
+    },
 
-  watch: {
-    $route: "getItem",
-  },
+    watch: {
+      $route: 'getItem'
+    },
 
-  created() {
-    this.getItem();
-  },
+    created() {
+      this.getItem();
+    },
 
-  methods: {
-    getSeason(id, season) {
-      if (season != this.season.season_number) {
+    methods: {
+      getSeason(id, season) {
+        if (season != this.season.season_number) {
+          this.season = {};
+          let url = api_url + this.type + '/' + this.id + '/season/' + season;
+          axios
+            .get(url, {
+              params: {
+                api_key
+              }
+            })
+            .then(response => {
+              if (response.status == 200) {
+                console.log('fetched');
+                // console.log(response.data);
+                this.season = response.data;
+              } else {
+                console.log('failed');
+              }
+            })
+            .catch(console.log);
+        }
+      },
+      getItem() {
+        // if (true) {
         this.season = {};
-        let url = api_url + this.type + "/" + this.id + "/season/" + season;
+        let url = api_url + this.type + '/' + this.id;
+        console.log(url);
         axios
           .get(url, {
             params: {
               api_key,
-            },
+              append_to_response: 'credits,similar,reviews'
+            }
           })
-          .then((response) => {
+          .then(response => {
             if (response.status == 200) {
-              console.log("fetched");
-              // console.log(response.data);
-              this.season = response.data;
+              console.log('fetched');
+              console.log(response.data);
+              this.item = response.data;
             } else {
-              console.log("failed");
+              console.log('failed');
+            }
+          })
+          .catch(console.log);
+        // }
+      },
+      getActor(id) {
+        let url = api_url + 'person/' + id;
+        console.log(url);
+        axios
+          .get(url, {
+            params: {
+              api_key
+            }
+          })
+          .then(response => {
+            console.log(response.data);
+            if (response.status == 200) {
+              this.actor = response.data;
+              this.dialog = true;
+            } else {
+              console.log('failed');
             }
           })
           .catch(console.log);
       }
     },
-    getItem() {
-      // if (true) {
-      this.season = {};
-      let url = api_url + this.type + "/" + this.id;
-      console.log(url);
-      axios
-        .get(url, {
-          params: {
-            api_key,
-            append_to_response: "credits,similar,reviews",
-          },
-        })
-        .then((response) => {
-          if (response.status == 200) {
-            console.log("fetched");
-            console.log(response.data);
-            this.item = response.data;
-          } else {
-            console.log("failed");
-          }
-        })
-        .catch(console.log);
-      // }
-    },
-    getActor(id) {
-      let url = api_url + "person/" + id;
-      console.log(url);
-      axios
-        .get(url, {
-          params: {
-            api_key,
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          if (response.status == 200) {
-            this.actor = response.data;
-            this.dialog = true;
-          } else {
-            console.log("failed");
-          }
-        })
-        .catch(console.log);
-    },
-  },
 
-  computed: mapGetters(["getBackdropPath", "getProfilePath"]),
-};
+    computed: mapGetters(['getBackdropPath', 'getProfilePath'])
+  };
 </script>
 
 <style scoped>
-* {
-  word-break: break-word;
-}
+  * {
+    word-break: break-word;
+  }
 </style>
