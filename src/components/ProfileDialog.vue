@@ -1,17 +1,22 @@
 <template>
   <v-card flat>
-    <v-row no-gutters>
-      <v-img
-        :src="getPosterPath(actor.profile_path)"
-        class="ma-0"
-        gradient="to bottom, rgba(255, 255, 255, 0), rgba(0, 0, 0, 1)"
-      >
-        <template v-slot:placeholder>
-          <Loading />
-        </template>
+    <v-row no-gutters justify="center">
+      <v-col>
+        <v-img
+          :src="getPosterPath(actor.profile_path)"
+          class="ma-0"
+          gradient="to bottom, rgba(255, 255, 255, 0), rgba(0, 0, 0, 1)"
+        >
+          <template v-slot:placeholder>
+            <Loading />
+          </template>
 
-        <Overlay :item="actor" />
-      </v-img>
+          <v-btn fab x-small dark @click="onClose">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <Overlay :item="actor" />
+        </v-img>
+      </v-col>
     </v-row>
 
     <v-row class="px-2 mx-0">
@@ -53,12 +58,24 @@
       Overlay
     },
     props: ['actor'],
-    computed: mapGetters(['getPosterPath', 'getProfilePath', 'getBackdropPath'])
+    computed: mapGetters([
+      'getPosterPath',
+      'getProfilePath',
+      'getBackdropPath'
+    ]),
+    methods: {
+      onClose() {
+        this.$emit('close-dialog');
+      }
+    }
   };
 </script>
 
 <style scoped>
   * {
     word-break: break-word;
+  }
+  .v-image >>> .v-image__image {
+    background-size: 100% 100%;
   }
 </style>

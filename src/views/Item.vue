@@ -116,13 +116,8 @@
               </div>
 
               <div justify="center">
-                <v-dialog
-                  v-model="dialog"
-                  max-width="80vw"
-                  fullscreen
-                  hide-overlay
-                >
-                  <v-btn
+                <v-dialog v-model="dialog" max-width="350">
+                  <!-- <v-btn
                     fab
                     fixed
                     right
@@ -132,8 +127,11 @@
                     @click="dialog = false"
                   >
                     <v-icon>mdi-close</v-icon>
-                  </v-btn>
-                  <ProfileDialog :actor="actor" />
+                  </v-btn> -->
+                  <ProfileDialog
+                    :actor="actor"
+                    @close-dialog="dialog = false"
+                  />
                 </v-dialog>
               </div>
 
@@ -284,7 +282,7 @@
             .then(response => {
               if (response.status == 200) {
                 console.log('fetched');
-                // console.log(response.data);
+                console.log(response.data);
                 this.season = response.data;
               } else {
                 console.log('failed');

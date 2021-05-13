@@ -26,13 +26,23 @@
       <Ratings :item="item" />
     </v-row>
 
-    <v-row class="justify-space-around pb-2" no-gutters>
-      <v-btn fab color="red" class="white--text mx-auto" v-if="isAuthenticated">
-        <v-icon>mdi-heart</v-icon>
+    <v-row
+      class="justify-space-around pb-2"
+      no-gutters
+      v-if="!item.episode_number"
+    >
+      <v-btn
+        v-if="isAuthenticated"
+        fab
+        color="red"
+        class="white--text mx-auto"
+        @click="onClick"
+      >
+        <v-icon v-if="!isFavorite">mdi-heart</v-icon>
+        <v-icon v-else>mdi-heart-off</v-icon>
       </v-btn>
 
       <v-btn
-        v-if="!item.episode_number"
         fab
         color="blue"
         class="white--text mx-auto"
@@ -53,7 +63,8 @@
   import Ratings from './Ratings';
   import Loading from './Loading';
   import Overlay from './Overlay';
-  import { mapGetters } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
+  import { cloneDeep } from 'lodash';
 
   export default {
     name: 'ItemDialog',
@@ -63,7 +74,40 @@
       Overlay
     },
     props: ['item'],
-    computed: mapGetters(['getBackdropPath', 'user', 'isAuthenticated'])
+    computed: {
+      ...mapGetters(['getBackdropPath', 'user', 'isAuthenticated']),
+      isFavorite() {
+        return (this.user.favorites[this.item.type] || []).includes(
+          this.item.id
+        );
+      },
+      userData() {
+        return cloneDeep(this.user);
+      }
+    },
+    methods: {
+      ...mapActions(['updateUserData', 'removeFromFavorites']),
+      onClick() {
+        if (this.isFavorite) {
+          this.$emit('close-dialog');
+          this.userData.favorites[this.item.type].splice(
+            this.userData.favorites[this.item.type].indexOf(this.item.id),
+            1
+          );
+          this.removeFromFavorites({ type: this.item.type, id: this.item.id });
+        } else {
+          if (!this.userData.favorites[this.item.type]) {
+            this.userData.favorites[this.item.type] = [];
+          }
+          this.userData.favorites[this.item.type].push(this.item.id);
+        }
+        console.log(this.userData.favorites);
+        this.updateUserData({
+          userData: this.userData,
+          loading: false
+        });
+      }
+    }
   };
 </script>
 

@@ -1,8 +1,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/database';
 import router from '@/router';
+import { cloneDeep } from 'lodash';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -11,7 +14,8 @@ export default new Vuex.Store({
     user: null,
     error: null,
     loading: false,
-    query: null
+    query: null,
+    favorites: {}
     // item: {}
   },
 
@@ -30,6 +34,9 @@ export default new Vuex.Store({
     },
     setQuery(state, payload) {
       state.query = payload;
+    },
+    setFavorites(state, payload) {
+      state.favorites = payload;
     }
     // setItem(state, payload) {
     // 	state.item = payload;
@@ -87,6 +94,63 @@ export default new Vuex.Store({
         });
     },
 
+    async fetchFavorites({ state, commit }) {
+      while (state.loading) await new Promise(r => setTimeout(r, 50));
+      commit('setLoading', true);
+      commit('setError', null);
+      let favorites = cloneDeep(state.favorites);
+      let favorites_ids = cloneDeep(state.user.favorites);
+      console.log(state.user);
+      let api_url = process.env.VUE_APP_API_URL;
+      let api_key = process.env.VUE_APP_API_KEY;
+
+      let params = { api_key };
+      let promiseList = [];
+
+      for (let type in favorites_ids) {
+        // filter out ids for which data is already present in state.favorites
+        favorites_ids[type] = favorites_ids[type].filter(
+          id => !(state.favorites[type] || []).some(obj => obj['id'] == id)
+        );
+
+        let url = api_url + type + '/';
+        favorites_ids[type].map(id => {
+          promiseList.push(
+            axios.get(url + id, { params }).then(response => {
+              if (response.status == 200) {
+                console.log('fetched for', type, id);
+                console.log(response.data);
+                if (!favorites[type]) {
+                  favorites[type] = [];
+                }
+                favorites[type].push(response.data);
+              } else {
+                console.log('failed for', type, id);
+              }
+            })
+          );
+        });
+      }
+      Promise.all(promiseList)
+        .then(() => {
+          for (let type in favorites) {
+            favorites[type].map(obj => (obj['type'] = type));
+          }
+          commit('setLoading', false);
+          commit('setFavorites', favorites);
+        })
+        .catch(error => {
+          console.log(error);
+          commit('setLoading', false);
+          commit('setError', error);
+        });
+    },
+    removeFromFavorites({ state, commit }, { type, id }) {
+      let favorites = cloneDeep(state.favorites);
+      favorites[type] = favorites[type].filter(obj => obj['id'] != id);
+      commit('setFavorites', favorites);
+      console.log(state.favorites);
+    },
     userSignUp({ commit, dispatch }, { email, password, firstName, lastName }) {
       commit('setLoading', true);
       commit('setError', null);
@@ -97,12 +161,12 @@ export default new Vuex.Store({
           console.log('User signed up');
           const userData = {
             id: user.user.uid,
-            favorites: [],
+            favorites: {},
             firstName: firstName,
             lastName: lastName
           };
           dispatch('updateUserData', { userData: userData });
-          router.push(`/users/${user.user.uid}`);
+          // router.push(`/`);
         })
         .catch(error => {
           commit('setUser', null);
@@ -120,22 +184,21 @@ export default new Vuex.Store({
         .then(user => {
           console.log('User signed in');
           const userData = {
-            id: user.user.uid
+            id: user.user.uid,
+            favorites: {}
           };
           commit('setUser', userData);
           dispatch('getUserData');
-          commit('setLoading', false);
-          router.push(`/users/${user.user.uid}`);
+          // router.push(`/`);
         })
         .catch(error => {
-          commit('setUser', null);
           commit('setError', error);
           commit('setLoading', false);
         });
     },
 
     autoSignIn({ commit, dispatch }, payload) {
-      commit('setUser', { id: payload.uid });
+      commit('setUser', { id: payload.uid, favorites: {} });
       dispatch('getUserData');
     },
 
@@ -161,33 +224,36 @@ export default new Vuex.Store({
     },
 
     getUserData({ commit, getters }) {
+      commit('setLoading', true);
+      commit('setError', null);
       firebase
         .database()
         .ref('/users/' + getters.user.id)
         .once('value')
         .then(data => data.val())
         .then(userData => {
-          commit('setUser', userData);
+          commit('setUser', { ...getters.user, ...userData });
+          console.log(getters.user);
+          commit('setLoading', false);
         })
         .catch(error => {
-          commit('setUser', null);
           commit('setError', error);
           commit('setLoading', false);
         });
     },
 
-    updateUserData({ commit }, { userData, message }) {
-      commit('setLoading', true);
+    updateUserData({ commit }, { userData, message = '', loading = true }) {
+      commit('setLoading', loading);
       commit('setError', null);
       commit('setUser', userData);
-      console.log(message);
+      // console.log(getters.user, userData);
       firebase
         .database()
         .ref('/users/' + userData.id)
         .update(userData)
         .then(() => {
-          commit('setError', { message: message });
           commit('setLoading', false);
+          commit('setError', { message: message });
         })
         .catch(error => {
           commit('setLoading', false);
@@ -219,7 +285,8 @@ export default new Vuex.Store({
     loading: state => state.loading,
     isAuthenticated: state => {
       return state.user !== null && state.user != undefined;
-    }
+    },
+    favorites: state => state.favorites
   },
 
   modules: {}

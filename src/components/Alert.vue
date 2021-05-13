@@ -1,5 +1,10 @@
 <template>
-  <v-alert :type="type" dismissible @input="onClose" :value="true">
+  <v-alert
+    :type="type"
+    dismissible
+    @input="onClose"
+    :value="text.length && true"
+  >
     {{ text }}
   </v-alert>
 </template>
@@ -10,7 +15,7 @@
     props: ['text', 'type'],
     methods: {
       onClose() {
-        this.$emit('dismissed');
+        this.$emit('close-alert');
       }
     }
   };

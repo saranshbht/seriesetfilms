@@ -12,11 +12,10 @@
       <v-spacer />
 
       <v-toolbar-title>
-        <router-link to="/" tag="span" class="header">
-          {{ appName }}
-          <!-- <span class="header white--text text-decoration-none">
+        <router-link to="/" custom v-slot="{ href, navigate }">
+          <span class="header" :href="href" @click="navigate">
             {{ appName }}
-          </span> -->
+          </span>
         </router-link>
       </v-toolbar-title>
 
@@ -70,7 +69,14 @@
           { icon: 'lock_open', title: 'Sign In', link: '/signin' }
         ];
         if (this.isAuthenticated) {
-          menuItems = [{ icon: 'person', title: 'Profile', link: '/profile' }];
+          menuItems = [
+            { icon: 'person', title: 'Profile', link: '/profile' },
+            {
+              icon: 'mdi-heart-multiple',
+              title: 'Favorites',
+              link: '/favorites'
+            }
+          ];
         }
         return menuItems;
       }

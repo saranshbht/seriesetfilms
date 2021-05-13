@@ -3,7 +3,7 @@
     <v-row v-if="error">
       <v-col sm="6" offset-sm="3">
         <app-alert
-          @dismissed="onDismissed"
+          @close-alert="onDismissed"
           :text="error.message"
           :type="'success'"
         ></app-alert>
@@ -92,6 +92,8 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
+  import { cloneDeep } from 'lodash';
+
   export default {
     name: 'Profile',
     data() {
@@ -108,7 +110,7 @@
     computed: {
       ...mapGetters(['user', 'loading', 'error']),
       userData() {
-        return { ...this.user };
+        return cloneDeep(this.user);
       }
     },
     methods: {
@@ -127,40 +129,5 @@
 </script>
 
 <style scoped>
-  .custom-loader {
-    animation: loader 1s infinite;
-    display: flex;
-  }
-  @-moz-keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @-webkit-keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @-o-keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
+  @import '../assets/styles.css';
 </style>

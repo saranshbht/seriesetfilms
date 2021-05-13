@@ -27,7 +27,7 @@
 
     <v-row justify="center">
       <v-dialog v-model="dialog" max-width="75vw">
-        <ItemDialog :item="item" />
+        <ItemDialog :item="item" @close-dialog="dialog = false" />
       </v-dialog>
     </v-row>
   </v-card>

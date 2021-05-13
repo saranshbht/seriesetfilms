@@ -6,10 +6,11 @@ import vuetify from './plugins/vuetify';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import '@/firebase/';
 import Alert from '@/components/Alert';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 Vue.config.productionTip = false;
 Vue.component('app-alert', Alert);
+
 firebase.auth().onAuthStateChanged(user => {
   if (user) {
     store.dispatch('autoSignIn', user);

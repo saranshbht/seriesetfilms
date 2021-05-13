@@ -5,8 +5,9 @@ import Home from '../views/Home';
 import SignIn from '../views/SignIn';
 import SignUp from '../views/SignUp';
 import Profile from '../views/Profile';
+import Favorites from '../views/Favorites';
 // import AuthGaurd from './auth_guard';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 Vue.use(VueRouter);
 
@@ -14,8 +15,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
-    alias: '/users/:username'
+    component: Home
   },
   {
     path: '/about',
@@ -58,6 +58,21 @@ const routes = [
     meta: {
       requiresAuth: true
     }
+  },
+  {
+    path: '/favorites',
+    name: 'Favorites',
+    component: Favorites,
+    // beforeEnter: AuthGaurd
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '*',
+    name: 'Invalid Path',
+    component: Home,
+    redirect: '/'
   }
 ];
 
@@ -75,11 +90,7 @@ router.beforeEach((to, from, next) => {
       } else {
         next();
       }
-    } else {
-      next();
-    }
-
-    if (to.matched.some(record => record.meta.requiresVisitor)) {
+    } else if (to.matched.some(record => record.meta.requiresVisitor)) {
       if (user) {
         next({ path: '/' });
       } else {

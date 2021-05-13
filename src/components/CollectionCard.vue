@@ -7,7 +7,6 @@
           sm="4"
           md="3"
           lg="2"
-          xl="1"
           :key="i"
           class="d-flex justify-center"
         >
