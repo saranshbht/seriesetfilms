@@ -172,7 +172,7 @@
               v-for="i in item.number_of_seasons"
               :key="'season' + i"
               class="rounded"
-              @click="getSeason(item.id, i)"
+              @click="getSeason(i)"
             >
               <v-expansion-panel-header class="text-h5">
                 Season {{ i }}
@@ -269,7 +269,7 @@
     },
 
     methods: {
-      getSeason(id, season) {
+      getSeason(season) {
         if (season != this.season.season_number) {
           this.season = {};
           let url = api_url + this.type + '/' + this.id + '/season/' + season;
@@ -281,21 +281,24 @@
             })
             .then(response => {
               if (response.status == 200) {
-                console.log('fetched');
-                console.log(response.data);
+                // console.log('fetched');
+                // console.log(response.data);
                 this.season = response.data;
               } else {
-                console.log('failed');
+                // console.log('failed');
               }
             })
-            .catch(console.log);
+            .catch(error => {
+              console.log(error);
+            });
         }
       },
+
       getItem() {
         // if (true) {
         this.season = {};
         let url = api_url + this.type + '/' + this.id;
-        console.log(url);
+        // console.log(url);
         axios
           .get(url, {
             params: {
@@ -305,19 +308,22 @@
           })
           .then(response => {
             if (response.status == 200) {
-              console.log('fetched');
-              console.log(response.data);
+              // console.log('fetched');
+              // console.log(response.data);
               this.item = response.data;
             } else {
-              console.log('failed');
+              // console.log('failed');
             }
           })
-          .catch(console.log);
+          .catch(error => {
+            console.log(error);
+          });
         // }
       },
+
       getActor(id) {
         let url = api_url + 'person/' + id;
-        console.log(url);
+        // console.log(url);
         axios
           .get(url, {
             params: {
@@ -325,15 +331,17 @@
             }
           })
           .then(response => {
-            console.log(response.data);
+            // console.log(response.data);
             if (response.status == 200) {
               this.actor = response.data;
               this.dialog = true;
             } else {
-              console.log('failed');
+              // console.log('failed');
             }
           })
-          .catch(console.log);
+          .catch(error => {
+            console.log(error);
+          });
       }
     },
 

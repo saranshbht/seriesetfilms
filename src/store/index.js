@@ -45,7 +45,7 @@ export default new Vuex.Store({
 
   actions: {
     fetchCollection({ state, commit }, query) {
-      console.log(query);
+      // console.log(query);
       if (query === state.query || (query === '' && !!state.collection.tv))
         return;
       commit('setQuery', query);
@@ -53,9 +53,11 @@ export default new Vuex.Store({
       commit('setError', null);
       let api_url = process.env.VUE_APP_API_URL;
       let api_key = process.env.VUE_APP_API_KEY;
-      console.log('start fetch');
+      // console.log('start fetch');
       let collection = {};
       let promiseList = [];
+
+      // fetch trending movies and tv shows of the week
       for (let type of ['tv', 'movie']) {
         collection[type] = [];
         let url = api_url,
@@ -71,14 +73,14 @@ export default new Vuex.Store({
 
         promiseList.push(
           axios.get(url, { params }).then(response => {
-            console.log(response);
+            // console.log(response);
             if (response.status == 200) {
-              console.log('fetched');
+              // console.log('fetched');
               collection[type] = response.data.results;
               collection[type].map(obj => (obj['type'] = type));
               commit('setCollection', collection);
             } else {
-              console.log('failed');
+              // console.log('failed');
             }
           })
         );
@@ -88,7 +90,7 @@ export default new Vuex.Store({
           commit('setLoading', false);
         })
         .catch(error => {
-          console.log('Some error occurred');
+          // console.log('Some error occurred');
           commit('setError', error);
           commit('setLoading', false);
         });
@@ -100,7 +102,7 @@ export default new Vuex.Store({
       commit('setError', null);
       let favorites = cloneDeep(state.favorites);
       let favorites_ids = cloneDeep(state.user.favorites);
-      console.log(state.user);
+      // console.log(state.user);
       let api_url = process.env.VUE_APP_API_URL;
       let api_key = process.env.VUE_APP_API_KEY;
 
@@ -108,7 +110,7 @@ export default new Vuex.Store({
       let promiseList = [];
 
       for (let type in favorites_ids) {
-        // filter out ids for which data is already present in state.favorites
+        // filter out user favorites for which data is already present in state favorites
         favorites_ids[type] = favorites_ids[type].filter(
           id => !(state.favorites[type] || []).some(obj => obj['id'] == id)
         );
@@ -118,14 +120,14 @@ export default new Vuex.Store({
           promiseList.push(
             axios.get(url + id, { params }).then(response => {
               if (response.status == 200) {
-                console.log('fetched for', type, id);
-                console.log(response.data);
+                // console.log('fetched for', type, id);
+                // console.log(response.data);
                 if (!favorites[type]) {
                   favorites[type] = [];
                 }
                 favorites[type].push(response.data);
               } else {
-                console.log('failed for', type, id);
+                // console.log('failed for', type, id);
               }
             })
           );
@@ -140,17 +142,19 @@ export default new Vuex.Store({
           commit('setFavorites', favorites);
         })
         .catch(error => {
-          console.log(error);
+          // console.log(error);
           commit('setLoading', false);
           commit('setError', error);
         });
     },
+
     removeFromFavorites({ state, commit }, { type, id }) {
       let favorites = cloneDeep(state.favorites);
       favorites[type] = favorites[type].filter(obj => obj['id'] != id);
       commit('setFavorites', favorites);
-      console.log(state.favorites);
+      // console.log(state.favorites);
     },
+
     userSignUp({ commit, dispatch }, { email, password, firstName, lastName }) {
       commit('setLoading', true);
       commit('setError', null);
@@ -158,7 +162,7 @@ export default new Vuex.Store({
         .auth()
         .createUserWithEmailAndPassword(email, password)
         .then(user => {
-          console.log('User signed up');
+          // console.log('User signed up');
           const userData = {
             id: user.user.uid,
             favorites: {},
@@ -182,7 +186,7 @@ export default new Vuex.Store({
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then(user => {
-          console.log('User signed in');
+          // console.log('User signed in');
           const userData = {
             id: user.user.uid,
             favorites: {}
@@ -209,7 +213,7 @@ export default new Vuex.Store({
         .auth()
         .signOut()
         .then(() => {
-          console.log('User signed out');
+          // console.log('User signed out');
           commit('setUser', null);
           commit('setLoading', false);
           router.push('/').catch(() => router.go());
@@ -218,7 +222,7 @@ export default new Vuex.Store({
           commit('setUser', null);
           commit('setError', error);
           commit('setLoading', false);
-          console.log(error);
+          // console.log(error);
           router.push('/').catch(() => router.go());
         });
     },
@@ -233,7 +237,7 @@ export default new Vuex.Store({
         .then(data => data.val())
         .then(userData => {
           commit('setUser', { ...getters.user, ...userData });
-          console.log(getters.user);
+          // console.log(getters.user);
           commit('setLoading', false);
         })
         .catch(error => {

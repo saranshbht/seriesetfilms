@@ -146,7 +146,7 @@
     methods: {
       ...mapActions(['userSignUp', 'clearError']),
       onSubmit() {
-        console.log('submitted');
+        // console.log('submitted');
         this.userSignUp({
           email: this.email,
           password: this.password,

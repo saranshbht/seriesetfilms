@@ -22,6 +22,7 @@
             <v-row justify="space-around" class="mb-3">
               <v-btn dark>Change Avatar</v-btn>
             </v-row>
+
             <v-textarea
               auto-grow
               clearable
@@ -31,25 +32,21 @@
               label="About"
             >
             </v-textarea>
+
             <v-text-field
               clearable
               v-model="userData.firstName"
               label="First Name"
             >
             </v-text-field>
+
             <v-text-field
               clearable
               v-model="userData.lastName"
               label="Last Name"
             >
             </v-text-field>
-            <!-- <v-text-field
-              clearable
-              v-model="userData.email"
-              label="Email Address"
-              :rules="[rules.required, rules.email]"
-            >
-            </v-text-field> -->
+
             <v-text-field
               clearable
               v-model="userData.mobile"
@@ -57,16 +54,6 @@
               :rules="[rules.mobileNumber]"
             >
             </v-text-field>
-            <!-- <v-text-field
-              clearable
-              v-model="userData.password"
-              label="Password"
-              :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-              :type="show ? 'text' : 'password'"
-              @click:append="show = !show"
-              :rules="[rules.required]"
-            >
-            </v-text-field> -->
           </v-card-text>
           <v-card-actions>
             <v-btn

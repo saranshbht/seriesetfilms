@@ -87,6 +87,7 @@
     },
     methods: {
       ...mapActions(['updateUserData', 'removeFromFavorites']),
+      // remove item from user favorites if there, otherwise add the item to user favorites
       onClick() {
         if (this.isFavorite) {
           this.$emit('close-dialog');
@@ -101,7 +102,7 @@
           }
           this.userData.favorites[this.item.type].push(this.item.id);
         }
-        console.log(this.userData.favorites);
+        // console.log(this.userData.favorites);
         this.updateUserData({
           userData: this.userData,
           loading: false

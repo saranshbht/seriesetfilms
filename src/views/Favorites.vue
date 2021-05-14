@@ -3,7 +3,6 @@
     <v-tabs v-model="tab" dark grow background-color="transparent">
       <v-tab> TV Shows </v-tab>
       <v-tab> Movies </v-tab>
-      <!-- <v-tab> Episodes </v-tab> -->
     </v-tabs>
 
     <v-tabs-items v-model="tab">
@@ -34,16 +33,6 @@
           card-height="320"
         />
       </v-tab-item>
-
-      <!-- <v-tab-item>
-        <Loading v-if="loading" />
-        <CollectionCard
-          v-else
-          :collection="favorites.episode"
-          card-width="240"
-          card-height="320"
-        />
-      </v-tab-item> -->
     </v-tabs-items>
   </v-card>
 </template>

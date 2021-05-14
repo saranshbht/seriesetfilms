@@ -17,12 +17,6 @@
           {{ item.name || item.title }}
         </div>
       </div>
-
-      <!-- <v-card-actions>
-        <v-btn fab small color="red" class="white--text" @click="print">
-          <v-icon>mdi-heart</v-icon>
-        </v-btn>
-      </v-card-actions> -->
     </v-img>
 
     <v-row justify="center">
@@ -50,11 +44,6 @@
         dialog: false
       };
     },
-    // methods: {
-    //   print() {
-    //     console.log('added');
-    //   }
-    // },
     computed: mapGetters(['getPosterPath'])
   };
 </script>
@@ -76,9 +65,4 @@
     font-style: oblique;
     font-weight: 600;
   }
-  /* .v-btn--fab {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-    } */
 </style>
