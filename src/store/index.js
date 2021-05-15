@@ -4,7 +4,7 @@ import axios from 'axios';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-import router from '@/router';
+// import router from '@/router';
 import { cloneDeep } from 'lodash';
 Vue.use(Vuex);
 
@@ -216,14 +216,11 @@ export default new Vuex.Store({
           // console.log('User signed out');
           commit('setUser', null);
           commit('setLoading', false);
-          router.push('/').catch(() => router.go());
         })
         .catch(error => {
-          commit('setUser', null);
           commit('setError', error);
           commit('setLoading', false);
           // console.log(error);
-          router.push('/').catch(() => router.go());
         });
     },
 

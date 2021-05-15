@@ -16,7 +16,7 @@
 
     <v-divider></v-divider>
     <template v-for="item in items">
-      <v-list-item :href="item.href" :to="item.link" :key="item.title">
+      <v-list-item :to="item.link" :key="item.title">
         <v-list-item-action>
           <v-icon light> {{ item.icon }} </v-icon>
         </v-list-item-action>
