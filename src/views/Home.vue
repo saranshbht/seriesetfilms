@@ -66,7 +66,7 @@
       }
     },
     computed: mapGetters(['collection', 'loading']),
-    mounted() {
+    created() {
       this.fetchCollection(this.search);
     }
   };

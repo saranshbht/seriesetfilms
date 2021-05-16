@@ -97,6 +97,9 @@
         // console.log('Dismissed alert');
         this.clearError();
       }
+    },
+    created() {
+      this.clearError();
     }
   };
 </script>

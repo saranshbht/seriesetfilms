@@ -342,6 +342,11 @@
             if (response.status == 200) {
               // console.log('fetched');
               // console.log(response.data);
+              if (response.data.similar && response.data.similar.results) {
+                response.data.similar.results.map(
+                  obj => (obj['type'] = this.type)
+                );
+              }
               this.item = response.data;
               this.setLoading(false);
             }
