@@ -63,7 +63,7 @@ const routes = [
     path: '*',
     name: 'Invalid Path',
     component: Home,
-    redirect: '/'
+    redirect: { name: 'Home' }
   }
 ];
 
@@ -78,7 +78,7 @@ router.beforeEach((to, from, next) => {
     // redirect to signin if a page requiring auth is accessed without login
     if (to.matched.some(record => record.meta.requiresAuth)) {
       if (!user) {
-        next({ path: '/signin' });
+        next({ name: 'SignIn' });
       } else {
         next();
       }
@@ -86,7 +86,7 @@ router.beforeEach((to, from, next) => {
     // redirect to home (/) if user attempts to access /signin, /signup after logging in
     else if (to.matched.some(record => record.meta.requiresVisitor)) {
       if (user) {
-        next({ path: '/' });
+        next({ name: 'Home' });
       } else {
         next();
       }

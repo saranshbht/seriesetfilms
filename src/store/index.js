@@ -6,11 +6,12 @@ import 'firebase/auth';
 import 'firebase/database';
 // import router from '@/router';
 import { cloneDeep } from 'lodash';
+import router from '../router';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    collection: { tv: null, movie: null },
+    collection: {},
     user: null,
     error: null,
     loading: false,
@@ -170,7 +171,7 @@ export default new Vuex.Store({
             lastName: lastName
           };
           dispatch('updateUserData', { userData: userData });
-          // router.push(`/`);
+          // router.push({ name: 'Home' });
         })
         .catch(error => {
           commit('setUser', null);
@@ -193,7 +194,7 @@ export default new Vuex.Store({
           };
           commit('setUser', userData);
           dispatch('getUserData');
-          // router.push(`/`);
+          // router.push({ name: 'Home' });
         })
         .catch(error => {
           commit('setError', error);
@@ -216,11 +217,13 @@ export default new Vuex.Store({
           // console.log('User signed out');
           commit('setUser', null);
           commit('setLoading', false);
+          router.push({ name: 'Home' }).catch(() => router.go());
         })
         .catch(error => {
           commit('setError', error);
           commit('setLoading', false);
           // console.log(error);
+          router.push({ name: 'Home' }).catch(() => router.go());
         });
     },
 

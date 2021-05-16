@@ -18,9 +18,7 @@
 
     <v-tabs-items v-model="tab">
       <v-tab-item>
-        <Loading v-if="loading" />
         <CollectionCard
-          v-else
           :collection="collection.tv"
           card-width="200"
           card-height="300"
@@ -28,9 +26,7 @@
       </v-tab-item>
 
       <v-tab-item>
-        <Loading v-if="loading" />
         <CollectionCard
-          v-else
           :collection="collection.movie"
           card-width="200"
           card-height="300"
@@ -44,13 +40,13 @@
   // @ is an alias to /src
   import { mapActions, mapGetters } from 'vuex';
   import CollectionCard from '@/components/CollectionCard';
-  import Loading from '@/components/Loading';
+  // import Loading from '@/components/Loading';
 
   export default {
     name: 'Home',
     components: {
-      CollectionCard,
-      Loading
+      CollectionCard
+      // Loading
     },
     data() {
       return {

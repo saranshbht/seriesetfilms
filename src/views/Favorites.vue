@@ -7,8 +7,7 @@
 
     <v-tabs-items v-model="tab">
       <v-tab-item>
-        <Loading v-if="loading" />
-        <div v-else-if="!favorites.tv" class="text-center">
+        <div v-if="!favorites.tv || !favorites.tv.length" class="text-center">
           Mark some shows as favorites
           <v-icon color="red" large>mdi-heart</v-icon>
         </div>
@@ -21,8 +20,10 @@
       </v-tab-item>
 
       <v-tab-item>
-        <Loading v-if="loading" />
-        <div v-else-if="!favorites.movie" class="text-center">
+        <div
+          v-if="!favorites.movie || !favorites.movie.length"
+          class="text-center"
+        >
           Mark some movies as favorites
           <v-icon color="red" large>mdi-heart</v-icon>
         </div>
@@ -40,13 +41,13 @@
 <script>
   import { mapActions, mapGetters } from 'vuex';
   import CollectionCard from '@/components/CollectionCard';
-  import Loading from '@/components/Loading';
+  // import Loading from '@/components/Loading';
 
   export default {
     name: 'Home',
     components: {
-      CollectionCard,
-      Loading
+      CollectionCard
+      // Loading
     },
     data() {
       return {
