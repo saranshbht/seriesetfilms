@@ -1,21 +1,27 @@
 <template>
-  <v-card flat>
+  <v-card flat style="position: relative;">
     <v-row no-gutters justify="center">
-      <v-col>
-        <v-img
+      <v-col cols="6">
+        <!-- <v-img
           :src="getPosterPath(actor.profile_path)"
           class="ma-0"
           gradient="to bottom, rgba(255, 255, 255, 0), rgba(0, 0, 0, 1)"
-        >
-          <template v-slot:placeholder>
-            <Loading />
-          </template>
-
-          <v-btn fab x-small dark @click="onClose">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <Overlay :item="actor" />
-        </v-img>
+          height="100%"
+          width="100%"
+        > -->
+        <v-avatar width="100%" height="100%" tile>
+          <v-img
+            :src="getPosterPath(actor.profile_path)"
+            :alt="actor.name"
+            class="ma-0"
+            gradient="to bottom, rgba(255, 255, 255, 0), rgba(0, 0, 0, 1)"
+          >
+            <template v-slot:placeholder>
+              <Loading />
+            </template>
+            <Overlay :item="actor" />
+          </v-img>
+        </v-avatar>
       </v-col>
     </v-row>
 
@@ -42,6 +48,18 @@
         {{ actor.place_of_birth }}
       </v-card-text>
     </v-row>
+    <v-btn
+      fab
+      dark
+      large
+      top
+      right
+      absolute
+      class="mt-8 mr-n4"
+      @click="onClose"
+    >
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
   </v-card>
 </template>
 

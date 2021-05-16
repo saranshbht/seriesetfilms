@@ -26,6 +26,9 @@
 </script>
 
 <style scoped>
+  * {
+    word-break: break-word;
+  }
   .title,
   .subtitle-1 {
     overflow: hidden;

@@ -264,6 +264,9 @@ export default new Vuex.Store({
 
     clearError({ commit }) {
       commit('setError', null);
+    },
+    setLoading({ commit }, payload) {
+      commit('setLoading', payload);
     }
   },
 

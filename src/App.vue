@@ -19,6 +19,15 @@
         </router-link>
       </v-toolbar-title>
 
+      <v-progress-linear
+        v-if="loading"
+        indeterminate
+        absolute
+        bottom
+        height="6"
+        color="black"
+      ></v-progress-linear>
+
       <v-spacer />
       <v-toolbar-items class="hidden-xs-only">
         <v-btn
@@ -62,7 +71,7 @@
       };
     },
     computed: {
-      ...mapGetters(['user', 'isAuthenticated']),
+      ...mapGetters(['user', 'isAuthenticated', 'loading']),
       menuItems() {
         let menuItems = [
           { icon: 'mdi-account-plus', title: 'Sign Up', link: '/signup' },

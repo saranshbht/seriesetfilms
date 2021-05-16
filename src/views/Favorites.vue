@@ -15,8 +15,8 @@
         <CollectionCard
           v-else
           :collection="favorites.tv"
-          card-width="240"
-          card-height="320"
+          card-width="200"
+          card-height="300"
         />
       </v-tab-item>
 
@@ -29,8 +29,8 @@
         <CollectionCard
           v-else
           :collection="favorites.movie"
-          card-width="240"
-          card-height="320"
+          card-width="200"
+          card-height="300"
         />
       </v-tab-item>
     </v-tabs-items>

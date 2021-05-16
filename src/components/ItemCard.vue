@@ -20,7 +20,7 @@
     </v-img>
 
     <v-row justify="center">
-      <v-dialog v-model="dialog" max-width="75vw">
+      <v-dialog v-model="dialog" :width="dialogWidth">
         <ItemDialog :item="item" @close-dialog="dialog = false" />
       </v-dialog>
     </v-row>
@@ -44,7 +44,17 @@
         dialog: false
       };
     },
-    computed: mapGetters(['getPosterPath'])
+    computed: {
+      ...mapGetters(['getPosterPath']),
+      dialogWidth() {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs':
+            return this.$vuetify.breakpoint.width;
+          default:
+            return this.$vuetify.breakpoint.width / 2;
+        }
+      }
+    }
   };
 </script>
 
@@ -64,5 +74,8 @@
     color: white;
     font-style: oblique;
     font-weight: 600;
+  }
+  .v-card {
+    cursor: pointer;
   }
 </style>
