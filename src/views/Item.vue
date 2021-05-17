@@ -57,7 +57,12 @@
             >
               <div class="text-h5 font-weight-bold">Cast</div>
               <v-row class="px-2">
-                <v-col v-for="actor in item.credits.cast" :key="actor.id">
+                <v-col
+                  v-for="actor in item.credits.cast.filter(
+                    actor => actor.profile_path
+                  )"
+                  :key="actor.id"
+                >
                   <v-row no-gutters>
                     <v-col cols="12" class="pa-1 d-flex justify-center">
                       <img

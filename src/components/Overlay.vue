@@ -1,6 +1,6 @@
 <template>
   <v-row no-gutters class="d-flex fill-height align-content-end white--text">
-    <v-col cols="12" class="title px-2 text-h4">
+    <v-col cols="12" class="title px-2 text-h5 text-lg-h4">
       {{ item.name || item.title }}
     </v-col>
 
