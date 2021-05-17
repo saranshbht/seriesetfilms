@@ -76,7 +76,6 @@ export default new Vuex.Store({
           axios.get(url, { params }).then(response => {
             // console.log(response);
             if (response.status == 200) {
-              // console.log('fetched');
               collection[type] = response.data.results;
               collection[type].map(obj => (obj['type'] = type));
               commit('setCollection', collection);
@@ -151,7 +150,9 @@ export default new Vuex.Store({
 
     removeFromFavorites({ state, commit }, { type, id }) {
       let favorites = cloneDeep(state.favorites);
-      favorites[type] = favorites[type].filter(obj => obj['id'] != id);
+      if (favorites[type]) {
+        favorites[type] = favorites[type].filter(obj => obj['id'] != id);
+      }
       commit('setFavorites', favorites);
       // console.log(state.favorites);
     },
@@ -164,6 +165,7 @@ export default new Vuex.Store({
         .createUserWithEmailAndPassword(email, password)
         .then(user => {
           // console.log('User signed up');
+          router.go();
           const userData = {
             id: user.user.uid,
             favorites: {},
@@ -188,6 +190,7 @@ export default new Vuex.Store({
         .signInWithEmailAndPassword(email, password)
         .then(user => {
           // console.log('User signed in');
+          router.go();
           const userData = {
             id: user.user.uid,
             favorites: {}
@@ -217,13 +220,13 @@ export default new Vuex.Store({
           // console.log('User signed out');
           commit('setUser', null);
           commit('setLoading', false);
-          router.push({ name: 'Home' }).catch(() => router.go());
+          // router.push({ name: 'Home' }).catch(() => router.go());
         })
         .catch(error => {
           commit('setError', error);
           commit('setLoading', false);
           // console.log(error);
-          router.push({ name: 'Home' }).catch(() => router.go());
+          // router.push({ name: 'Home' }).catch(() => router.go());
         });
     },
 

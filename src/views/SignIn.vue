@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height fluid>
-    <v-row v-if="error">
-      <v-col sm="6" offset-sm="3">
+    <v-row v-if="error" justify="center">
+      <v-col sm="6">
         <app-alert
           @close-alert="onDismissed"
           :text="error.message"
@@ -10,11 +10,11 @@
       </v-col>
     </v-row>
 
-    <v-row>
-      <v-col sm="6" offset-sm="3">
+    <v-row justify="center">
+      <v-col cols="10" sm="6" md="4">
         <v-card flat>
-          <v-card-title primary-title>
-            <h3>Welcome Back! &#x1F607;</h3>
+          <v-card-title class="justify-center">
+            <h3 class="text-center">Welcome Back! &#x1F607;</h3>
           </v-card-title>
           <v-form @submit.prevent="onSubmit" v-model="formValid">
             <v-text-field
@@ -56,7 +56,7 @@
             </v-card-actions>
           </v-form>
         </v-card>
-        <v-footer class="justify-center my-6">
+        <v-footer class="justify-center text-center my-6">
           Don't have an account yet?{{ '\xa0' }}
           <strong><router-link to="/signup">Sign up</router-link></strong>
         </v-footer>
@@ -105,5 +105,8 @@
 </script>
 
 <style scoped>
+  * {
+    word-break: break-word;
+  }
   @import '../assets/styles.css';
 </style>

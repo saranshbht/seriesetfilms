@@ -1,5 +1,5 @@
 <template>
-  <v-card flat tile class="indigo darken-3">
+  <v-card v-if="user" flat tile class="indigo darken-3">
     <v-tabs v-model="tab" dark grow background-color="transparent">
       <v-tab> TV Shows </v-tab>
       <v-tab> Movies </v-tab>

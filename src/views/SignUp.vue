@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height fluid>
-    <v-row v-if="error">
-      <v-col sm="6" offset-sm="3">
+    <v-row v-if="error" justify="center">
+      <v-col sm="6">
         <app-alert
           @close-alert="onDismissed"
           :text="error.message"
@@ -10,8 +10,8 @@
       </v-col>
     </v-row>
 
-    <v-row>
-      <v-col sm="6" offset-sm="3">
+    <v-row justify="center">
+      <v-col cols="10" sm="6" md="4">
         <v-card flat>
           <v-card-title class="font-weight-black text-h4 justify-center">
             Register
@@ -105,7 +105,7 @@
             <v-icon color="black" large>mdi-apple</v-icon>
           </v-row> -->
         </v-card>
-        <v-footer class="justify-center my-6">
+        <v-footer class="justify-center text-center my-6">
           Already have an account?{{ '\xa0' }}
           <strong><router-link to="/signin">Sign in</router-link></strong>
         </v-footer>
